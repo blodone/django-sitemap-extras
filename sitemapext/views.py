@@ -3,11 +3,22 @@ from random import randint
 from django.conf import settings
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse
-from django.utils.cache import patch_response_headers
-from django.views.decorators.cache import cache_page, never_cache
+
+try:
+    from django.core.exceptions import ImproperlyConfigured
+    importing_exceptions = (ImportError, ImproperlyConfigured)
+except ImportError:
+    pass
+
+try:
+    from django.utils.cache import patch_response_headers
+    from django.views.decorators.cache import cache_page, never_cache
+except importing_exceptions:
+    pass
+
 try:
     from django.views.generic import ListView, View
-except ImportError:
+except importing_exceptions:
     try:
         from cbv import ListView, View
     except ImportError:
