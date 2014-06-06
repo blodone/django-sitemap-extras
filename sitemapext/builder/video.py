@@ -67,7 +67,7 @@ class VideoFormatter(Formatter):
         except ValueError:
             url, attrs = value, {}
         tagelem = etree.Element(self.builder.ns_format('gallery_loc', 'video'), **attrs)
-        tagelem.text = title
+        tagelem.text = url
         yield tagelem
 
     def prices(self, value):
