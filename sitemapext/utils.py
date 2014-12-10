@@ -7,7 +7,6 @@ try:
 except ImportError:
     from django.utils.encoding import force_unicode as force_text
 
-from django.contrib.sites.models import Site
 
 from .settings import CONFIG
 
@@ -36,6 +35,7 @@ def assert_(stmt, msg, *args):
 
 
 def get_current_domain(request):
+    from django.contrib.sites.models import Site
     """
     Checks if contrib.sites is installed and returns either the current
     domain name or the domain name based on the request.
