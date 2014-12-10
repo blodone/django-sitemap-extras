@@ -3,7 +3,6 @@ from random import randint
 from django.conf import settings
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ImproperlyConfigured
 
 
 try:
@@ -67,23 +66,6 @@ class SitemapView(CacheMixin, ListView):
         context = self.get_context_data(object_list=self.object_list)
         self.builder = self.builder_class(self, context['object_list'])
         return HttpResponse(self.builder.render(), content_type='application/xml')
-
-    def get_urls(self, page=1, site=None, protocol=None):
-        if site is None:
-            raise ImproperlyConfigured("In order to use Sitemaps you must either use the sites framework or pass in a Site or RequestSite object in your view code.")
-
-        urls = []
-        for item in self.paginator.page(page).object_list:
-            loc = "%s://%s%s" % (protocol, site.domain, self.__get('location', item))
-            priority = self.__get('priority', item, None)
-            url_info = {
-                'location':   loc,
-                'lastmod':    self.__get('lastmod', item, None),
-                'changefreq': self.__get('changefreq', item, None),
-                'priority':   str(priority is not None and priority or '')
-            }
-            urls.append(url_info)
-        return urls
 
     def location(self, obj):
         return obj.get_absolute_url()
