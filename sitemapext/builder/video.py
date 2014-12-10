@@ -1,3 +1,5 @@
+from django.core.exceptions import ImproperlyConfigured
+
 from math import floor
 from types import GeneratorType
 from lxml import etree
@@ -112,3 +114,20 @@ class VideoSitemap(Sitemap):
             subelem = etree.SubElement(videoelem, self.ns_format(attr, 'video'))
             subelem.text = value
         return elem
+
+    def get_urls(self, page=1, site=None, protocol=None):
+        if site is None:
+            raise ImproperlyConfigured("In order to use Sitemaps you must either use the sites framework or pass in a Site or RequestSite object in your view code.")
+
+        urls = []
+        for item in self.paginator.page(page).object_list:
+            loc = "%s://%s%s" % (protocol, site.domain, self.__get('location', item))
+            priority = self.__get('priority', item, None)
+            url_info = {
+                'location':   loc,
+                'lastmod':    self.__get('lastmod', item, None),
+                'changefreq': self.__get('changefreq', item, None),
+                'priority':   str(priority is not None and priority or '')
+            }
+            urls.append(url_info)
+        return urls
