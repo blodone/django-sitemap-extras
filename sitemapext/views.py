@@ -4,7 +4,7 @@ from django.conf import settings
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 
-from django.views.decorators.cache import cache_page, never_cache
+
 try:
     from django.views.generic import ListView, View
 except ImportError:
@@ -33,6 +33,7 @@ class CacheMixin(object):
 
     def dispatch(self, *args, **kwargs):
         from django.utils.cache import patch_response_headers
+        from django.views.decorators.cache import cache_page, never_cache
         timeout = self.get_cache_timeout()
         if timeout is None:
             return super(CacheMixin, self).dispatch(*args, **kwargs)
@@ -48,6 +49,7 @@ class GoogleBotVerifierMixin(object):
     override_password = 'changeme'
 
     def dispatch(self, request, *args, **kwargs):
+        from django.views.decorators.cache import cache_page, never_cache
         ip = get_client_ip(request)
         if ip in settings.INTERNAL_IPS or is_googlebot(ip) or request.GET.get('password') == self.override_password:
             return never_cache(super(GoogleBotVerifierMixin, self).dispatch)(request, *args, **kwargs)
