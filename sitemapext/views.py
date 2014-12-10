@@ -3,7 +3,7 @@ from random import randint
 from django.conf import settings
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse
-from django.utils.cache import patch_response_headers
+
 from django.views.decorators.cache import cache_page, never_cache
 try:
     from django.views.generic import ListView, View
@@ -32,6 +32,7 @@ class CacheMixin(object):
         return self.key_prefix
 
     def dispatch(self, *args, **kwargs):
+        from django.utils.cache import patch_response_headers
         timeout = self.get_cache_timeout()
         if timeout is None:
             return super(CacheMixin, self).dispatch(*args, **kwargs)
